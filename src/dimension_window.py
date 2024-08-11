@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QLabel, QRadioButton,
     QPushButton, QWidget, QMessageBox, QVBoxLayout, QHBoxLayout,
@@ -7,9 +8,12 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
 
+
 class DimensionWindow(QWidget):
     def __init__(self, task):
         super().__init__()
+
+        self.task = task
 
         self.setWindowTitle('Choosing dimension')
 
@@ -59,10 +63,15 @@ class DimensionWindow(QWidget):
     def update_matrix(self):
         rows = self.row_input.value()
         cols = self.col_input.value()
-        self.payoff_matrix.setRowCount(rows)
+        if self.task == "Decision making under risk":
+            self.payoff_matrix.setRowCount(rows + 1)
+            self.payoff_matrix.setVerticalHeaderLabels(['Probabilities'] + [f'Row {i+1}' for i in range(rows)])
+        else:
+            self.payoff_matrix.setRowCount(rows)
+            self.payoff_matrix.setVerticalHeaderLabels([f'Row {i+1}' for i in range(rows)])
+        
         self.payoff_matrix.setColumnCount(cols)
         self.payoff_matrix.setHorizontalHeaderLabels([f'Column {i+1}' for i in range(cols)])
-        self.payoff_matrix.setVerticalHeaderLabels([f'Row {i+1}' for i in range(rows)])
 
     def on_button_click_previous(self):
         from main_window import MainWindow
@@ -70,6 +79,13 @@ class DimensionWindow(QWidget):
         self.previous_window.show()
 
     def on_button_click_next(self):
-        pass
-        # self.next_window = Solution()
-        # self.next_window.show()
+        data = []
+        for row in range(self.payoff_matrix.rowCount()):
+            for col in range(self.payoff_matrix.columnCount()):
+                item = self.payoff_matrix.item(row, col)
+                text = item.text() if item is not None else ""
+                data.append(text)
+        num_array = np.array(data, dtype=float)
+        
+        # self.new_window = Solution(num_array)
+        # self.new_window.show()
