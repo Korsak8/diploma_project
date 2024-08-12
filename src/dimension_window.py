@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
-
+from  solution_window import SolutionWindow
 
 class DimensionWindow(QWidget):
     def __init__(self, task):
@@ -87,5 +87,5 @@ class DimensionWindow(QWidget):
                 data.append(text)
         num_array = np.array(data, dtype=float)
         
-        self.new_window = Solution(num_array)
+        self.new_window = SolutionWindow(num_array, self.task)
         self.new_window.show()
