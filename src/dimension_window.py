@@ -87,5 +87,5 @@ class DimensionWindow(QWidget):
                 data.append(text)
         num_array = np.array(data, dtype=float)
         
-        # self.new_window = Solution(num_array)
-        # self.new_window.show()
+        self.new_window = Solution(num_array)
+        self.new_window.show()
