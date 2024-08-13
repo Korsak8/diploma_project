@@ -40,10 +40,15 @@ class SolutionWindow(QWidget):
         
         for method_name, method in methods.items():
             result = method(self.num_array)
+            dynamic_layout = QHBoxLayout()  
+            
             method_label = QLabel(f"Method: {method_name}", self)
             result_label = QLabel(f"Result: {result}", self)
-            main_layout.addWidget(method_label)
-            main_layout.addWidget(result_label)
+            
+            dynamic_layout.addWidget(method_label)
+            dynamic_layout.addWidget(result_label)
+            
+            main_layout.addLayout(dynamic_layout) 
         
 
         buttom_layout = QHBoxLayout()
