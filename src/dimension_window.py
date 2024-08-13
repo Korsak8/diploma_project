@@ -81,10 +81,12 @@ class DimensionWindow(QWidget):
     def on_button_click_next(self):
         data = []
         for row in range(self.payoff_matrix.rowCount()):
+            row_data = []
             for col in range(self.payoff_matrix.columnCount()):
                 item = self.payoff_matrix.item(row, col)
                 text = item.text() if item is not None else ""
-                data.append(text)
+                row_data.append(text)
+            data.append(row_data)
         num_array = np.array(data, dtype=float)
         
         self.new_window = SolutionWindow(num_array, self.task)
