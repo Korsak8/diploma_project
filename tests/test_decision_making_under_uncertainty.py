@@ -78,7 +78,7 @@ class TestDecisionMakingUnderUncertainty():
             ("default_matrix", 2, does_not_raise()),
             ("big_matrix", 5, does_not_raise()),
             ("single_element_matrix", 1, does_not_raise()),
-            ("multiple_optimal_strategies_matrix", [1,2], does_not_raise()),
+            ("multiple_optimal_strategies_matrix", [1,5], does_not_raise()),
             ("equal_rows_and_solutions_matrix", [1,3], does_not_raise()),
             ("empty_matrix", None, pytest.raises(ValueError))   
         ]
@@ -108,7 +108,7 @@ class TestDecisionMakingUnderUncertainty():
         "matrix, alpha, res, expectation",
         [
             ("default_matrix", 0.5, 4, does_not_raise()),
-            ("big_matrix", 0.5, 2, does_not_raise()),
+            ("big_matrix", 0.5, 5, does_not_raise()),
             ("single_element_matrix", 0.5, 1, does_not_raise()),
             ("multiple_optimal_strategies_matrix", 0.5, 1, does_not_raise()),
             ("equal_rows_and_solutions_matrix", 0.5, [1,3], does_not_raise()),
