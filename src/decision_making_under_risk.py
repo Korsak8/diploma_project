@@ -9,9 +9,9 @@ class DecisionMakingUnderRisk:
         return solution
     
     @staticmethod
-    def germeyer_criterio(payoff_matrix):
+    def germeyer_criterio(payoff_matrix, c_value):
         max_element = np.max(payoff_matrix[1:])
-        new_matrix = payoff_matrix[1:] - max_element*2
+        new_matrix = payoff_matrix[1:] - max_element*c_value
         weights = payoff_matrix[0]
         expeced_value_row = np.sum(new_matrix*weights,axis=1)
         solution = np.argmax(expeced_value_row) + 1
