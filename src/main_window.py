@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
-from dimension_window import InputWindow
+from input_window import InputWindow
 
 class MainWindow(QMainWindow):
     def __init__(self):
