@@ -3,7 +3,7 @@ import numpy as np
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QLabel, QRadioButton,
     QPushButton, QWidget, QMessageBox, QVBoxLayout, QHBoxLayout,
-    QSpinBox, QTableWidget,
+    QSpinBox, QTableWidget, QDoubleSpinBox
 )
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
@@ -15,7 +15,7 @@ class InputWindow(QWidget):
 
         self.task = task
 
-        self.setWindowTitle('Choosing dimension')
+        self.setWindowTitle('Input')
 
         main_layout = QVBoxLayout(self)
 
@@ -42,6 +42,31 @@ class InputWindow(QWidget):
         head_layout.addWidget(self.col_input)
         
         main_layout.addLayout(head_layout)
+
+        parameter_layout = QHBoxLayout()
+
+        self.alpha_label = QLabel('Choose alpha value:')
+        parameter_layout.addWidget(self.alpha_label)
+
+        self.alpha_input = QDoubleSpinBox()
+        self.alpha_input.setMinimum(0)
+        self.alpha_input.setMaximum(1)
+        self.alpha_input.setSingleStep(0.001)
+        self.alpha_input.setDecimals(3)
+        parameter_layout.addWidget(self.alpha_input)
+
+        if self.task == 'Decision making under risk':
+            self.c_value_label = QLabel('Choose c value:')
+            parameter_layout.addWidget(self.c_value_label)
+
+            self.c_input = QDoubleSpinBox()
+            self.c_input.setMinimum(1)
+            self.c_input.setMaximum(5)
+            self.c_input.setSingleStep(0.001)
+            self.c_input.setDecimals(3)
+            parameter_layout.addWidget(self.c_input)
+
+        main_layout.addLayout(parameter_layout)
 
         self.payoff_matrix = QTableWidget(self)
         main_layout.addWidget(self.payoff_matrix)
@@ -88,6 +113,11 @@ class InputWindow(QWidget):
                 row_data.append(text)
             data.append(row_data)
         num_array = np.array(data, dtype=float)
-        
-        self.new_window = SolutionWindow(num_array, self.task)
+
+        if self.task == 'Decision making under risk':
+            self.new_window = SolutionWindow(num_array, self.alpha_input.value(), self.task, self.c_input.value())
+        else:
+            self.new_window = SolutionWindow (num_array, self.alpha_input.value(), self.task)
+
         self.new_window.show()
+        self.close()
