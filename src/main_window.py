@@ -50,6 +50,7 @@ class MainWindow(QMainWindow):
         
         self.new_window = InputWindow(task)
         self.new_window.show()
+        self.close()
 
 app = QApplication(sys.argv)
 
