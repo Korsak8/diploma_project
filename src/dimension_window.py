@@ -9,7 +9,7 @@ from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
 from  solution_window import SolutionWindow
 
-class DimensionWindow(QWidget):
+class InputWindow(QWidget):
     def __init__(self, task):
         super().__init__()
 

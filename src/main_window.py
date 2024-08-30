@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
-from dimension_window import DimensionWindow
+from dimension_window import InputWindow
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, 'Choosing the task', 'Choose the kind of problem')
             return
         
-        self.new_window = DimensionWindow(task)
+        self.new_window = InputWindow(task)
         self.new_window.show()
 
 app = QApplication(sys.argv)

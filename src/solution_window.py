@@ -65,6 +65,6 @@ class SolutionWindow(QWidget):
 
 
     def on_button_click_previous(self):
-        from dimension_window import DimensionWindow
-        self.previous_window = DimensionWindow(self.task)
+        from dimension_window import InputWindow
+        self.previous_window = InputWindow(self.task)
         self.previous_window.show()
