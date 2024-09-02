@@ -1,13 +1,16 @@
 import sys
 import numpy as np
+import pandas as pd
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QLabel, QRadioButton,
     QPushButton, QWidget, QMessageBox, QVBoxLayout, QHBoxLayout,
-    QSpinBox, QTableWidget, QDoubleSpinBox
+    QSpinBox, QTableWidget, QDoubleSpinBox, QFileDialog,
+    QTableWidgetItem
 )
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
 from  solution_window import SolutionWindow
+from pathlib import Path
 
 class InputWindow(QWidget):
     def __init__(self, task):
@@ -40,6 +43,10 @@ class InputWindow(QWidget):
         self.col_input.setMaximum(7)
         self.col_input.valueChanged.connect(self.update_matrix)
         head_layout.addWidget(self.col_input)
+
+        self.upload_button = QPushButton('Upload file', self)
+        self.upload_button.clicked.connect(self.load_file)
+        head_layout.addWidget(self.upload_button) 
         
         main_layout.addLayout(head_layout)
 
@@ -97,6 +104,35 @@ class InputWindow(QWidget):
         
         self.payoff_matrix.setColumnCount(cols)
         self.payoff_matrix.setHorizontalHeaderLabels([f'Column {i+1}' for i in range(cols)])
+
+    def load_file(self):
+        file_name, _ = QFileDialog.getOpenFileName(self,"Open file")
+
+        if file_name:
+            file_extension = Path(file_name).suffix
+
+            if file_extension == '.csv':
+                matrix = pd.read_csv(file_name, header=None).to_numpy()
+            elif file_extension in ['.xlsx','.xls']:
+                matrix = pd.read_excel(file_name, header=None).to_numpy()
+            elif file_extension == '.tsv':
+                matrix = pd.read_csv(file_name, sep="\t", header=None).to_numpy()
+            else:
+                QMessageBox.warning(self,"Unsupported File", "File format is not supported.")
+        
+        rows, cols = matrix.shape
+
+        self.row_input.setValue(rows)
+        self.col_input.setValue(cols)
+        
+        self.payoff_matrix.setRowCount(rows)
+        self.payoff_matrix.setColumnCount(cols)
+
+        for row in range(rows):
+            for col in range(cols):
+                item = QTableWidgetItem(str(matrix[row, col]))
+                self.payoff_matrix.setItem(row, col, item)
+
 
     def on_button_click_previous(self):
         from main_window import MainWindow
