@@ -151,7 +151,12 @@ class InputWindow(QWidget):
                 text = item.text() if item is not None else ""
                 row_data.append(text)
             data.append(row_data)
-        num_array = np.array(data, dtype=float)
+        
+        try:
+            num_array = np.array(data, dtype=float)
+        except ValueError:
+            QMessageBox.warning(self, "Error", "The matrix is empty or contains invalid entries.")
+            return
 
         if self.task == 'Decision making under risk':
             self.new_window = SolutionWindow(num_array, self.alpha_input.value(), self.task, self.c_input.value())
