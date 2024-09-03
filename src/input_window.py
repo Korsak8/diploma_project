@@ -75,8 +75,8 @@ class InputWindow(QWidget):
 
         main_layout.addLayout(parameter_layout)
 
-        self.payoff_matrix = QTableWidget(self)
-        main_layout.addWidget(self.payoff_matrix)
+        self.table_payoff_matrix = QTableWidget(self)
+        main_layout.addWidget(self.table_payoff_matrix)
 
         bottom_layout = QHBoxLayout()
 
@@ -96,17 +96,20 @@ class InputWindow(QWidget):
         rows = self.row_input.value()
         cols = self.col_input.value()
         if self.task == "Decision making under risk":
-            self.payoff_matrix.setRowCount(rows + 1)
-            self.payoff_matrix.setVerticalHeaderLabels(['Probabilities'] + [f'Row {i+1}' for i in range(rows)])
+            self.table_payoff_matrix.setRowCount(rows + 1)
+            self.table_payoff_matrix.setVerticalHeaderLabels(['Probabilities'] + [f'Row {i+1}' for i in range(rows)])
         else:
-            self.payoff_matrix.setRowCount(rows)
-            self.payoff_matrix.setVerticalHeaderLabels([f'Row {i+1}' for i in range(rows)])
+            self.table_payoff_matrix.setRowCount(rows)
+            self.table_payoff_matrix.setVerticalHeaderLabels([f'Row {i+1}' for i in range(rows)])
         
-        self.payoff_matrix.setColumnCount(cols)
-        self.payoff_matrix.setHorizontalHeaderLabels([f'Column {i+1}' for i in range(cols)])
+        self.table_payoff_matrix.setColumnCount(cols)
+        self.table_payoff_matrix.setHorizontalHeaderLabels([f'Column {i+1}' for i in range(cols)])
 
     def load_file(self):
-        file_name, _ = QFileDialog.getOpenFileName(self,"Open file")
+        file_name, _ = QFileDialog.getOpenFileName(self,"Open file", "", "CSV Files (*.csv);;Excel Files (*.xlsx *.xls);;TSV Files (*.tsv)")
+
+        if not file_name:
+            return
 
         if file_name:
             file_extension = Path(file_name).suffix
@@ -125,13 +128,13 @@ class InputWindow(QWidget):
         self.row_input.setValue(rows)
         self.col_input.setValue(cols)
         
-        self.payoff_matrix.setRowCount(rows)
-        self.payoff_matrix.setColumnCount(cols)
+        self.table_payoff_matrix.setRowCount(rows)
+        self.table_payoff_matrix.setColumnCount(cols)
 
         for row in range(rows):
             for col in range(cols):
                 item = QTableWidgetItem(str(matrix[row, col]))
-                self.payoff_matrix.setItem(row, col, item)
+                self.table_payoff_matrix.setItem(row, col, item)
 
 
     def on_button_click_previous(self):
@@ -141,10 +144,10 @@ class InputWindow(QWidget):
 
     def on_button_click_next(self):
         data = []
-        for row in range(self.payoff_matrix.rowCount()):
+        for row in range(self.table_payoff_matrix.rowCount()):
             row_data = []
-            for col in range(self.payoff_matrix.columnCount()):
-                item = self.payoff_matrix.item(row, col)
+            for col in range(self.table_payoff_matrix.columnCount()):
+                item = self.table_payoff_matrix.item(row, col)
                 text = item.text() if item is not None else ""
                 row_data.append(text)
             data.append(row_data)
