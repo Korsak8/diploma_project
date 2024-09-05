@@ -22,33 +22,33 @@ class InputWindow(QWidget):
 
         main_layout = QVBoxLayout(self)
 
-        head_layout = QHBoxLayout()
+        header_layout = QHBoxLayout()
 
         self.label = QLabel('Choose payoff matrix  dimension:', self)
         self.label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        head_layout.addWidget(self.label)
+        header_layout.addWidget(self.label)
 
         self.row_input = QSpinBox(self)
         self.row_input.setMinimum(1)
-        self.row_input.setMaximum(7)
+        self.row_input.setMaximum(15)
         self.row_input.valueChanged.connect(self.update_matrix)
-        head_layout.addWidget(self.row_input)
+        header_layout.addWidget(self.row_input)
 
         self.multiplier_label = QLabel('x', self)
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        head_layout.addWidget(self.multiplier_label)
+        header_layout.addWidget(self.multiplier_label)
 
         self.col_input = QSpinBox(self)
         self.col_input.setMinimum(1)
-        self.col_input.setMaximum(7)
+        self.col_input.setMaximum(15)
         self.col_input.valueChanged.connect(self.update_matrix)
-        head_layout.addWidget(self.col_input)
+        header_layout.addWidget(self.col_input)
 
         self.upload_button = QPushButton('Upload file', self)
         self.upload_button.clicked.connect(self.load_file)
-        head_layout.addWidget(self.upload_button) 
+        header_layout.addWidget(self.upload_button) 
         
-        main_layout.addLayout(head_layout)
+        main_layout.addLayout(header_layout)
 
         parameter_layout = QHBoxLayout()
 
