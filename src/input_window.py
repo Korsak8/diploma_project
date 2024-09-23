@@ -2,15 +2,14 @@ import sys
 import numpy as np
 import pandas as pd
 from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QLabel, QRadioButton,
-    QPushButton, QWidget, QMessageBox, QVBoxLayout, QHBoxLayout,
-    QSpinBox, QTableWidget, QDoubleSpinBox, QFileDialog,
-    QTableWidgetItem
+    QLabel, QPushButton, QWidget, QMessageBox, QVBoxLayout, QHBoxLayout,
+    QSpinBox, QTableWidget, QDoubleSpinBox, QFileDialog, QTableWidgetItem
 )
-from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
 from  solution_window import SolutionWindow
 from pathlib import Path
+from db.models import UserHistory
+from db.queries import insert_user_activity
 
 class InputWindow(QWidget):
     def __init__(self, task):
@@ -157,6 +156,18 @@ class InputWindow(QWidget):
         except ValueError:
             QMessageBox.warning(self, "Error", "The matrix is empty or contains invalid entries.")
             return
+        
+        matrix_str = '\n'.join([','.join(map(str, row)) for row in num_array])
+    
+        activity = UserHistory(
+            description='',
+            task_type=self.task,
+            matrix=matrix_str,
+            alpha_value=self.alpha_input.value(),
+            c_value=self.c_input.value() if self.task == "Decision making under risk" else None
+        )
+
+        insert_user_activity(activity)
 
         if self.task == 'Decision making under risk':
             self.new_window = SolutionWindow(num_array, self.alpha_input.value(), self.task, self.c_input.value())
