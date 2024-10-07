@@ -3,13 +3,13 @@ import os
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QLabel, QRadioButton,
     QPushButton, QWidget, QMessageBox, QVBoxLayout,
-    QHBoxLayout, QSpacerItem, QSizePolicy
 )
-from PyQt6.QtGui import QFont, QIcon
+from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt, QSize
 from input_window import InputWindow
 from history_window import HistoryWindow
 from db.database import create_user_history_table
+from pathlib import Path
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -17,36 +17,37 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle('GameDecideApp')
 
+        self.setMinimumSize(640,480)
+
         self.central_widget = QWidget(self)
         self.setCentralWidget(self.central_widget)
 
         main_layout = QVBoxLayout(self.central_widget)
 
-        header_layout = QHBoxLayout()
-
-        self.label = QLabel('Choose the kind of problem', self.central_widget)
-        self.label.setFont(QFont('Arial', 20))
-        self.label.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
-        header_layout.addWidget(self.label)
-
         # Add activity history icon
         script_dir = os.path.dirname(__file__)
         icon_path = os.path.join(script_dir, 'icons', 'user_history.svg')
+
+        icon_container = QWidget(self.central_widget)
+        header_layout = QVBoxLayout(icon_container)
 
         self.history_icon = QPushButton(self.central_widget)
         self.history_icon.setIcon(QIcon(icon_path))
         self.history_icon.setIconSize(QSize(24,24))
         self.history_icon.setFixedSize(32,32)
+        self.history_icon.setObjectName('history_icon')
         self.history_icon.clicked.connect(self.show_history)
-        header_layout.addWidget(self.history_icon)
+        header_layout.addWidget(self.history_icon, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop)
 
-        main_layout.addLayout(header_layout)
+        main_layout.addWidget(icon_container)
 
-        # Add a spacer to ensure the header_layout remains at the top regardless of window resizing
-        spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-        main_layout.addItem(spacer)
+        radio_container = QWidget(self.central_widget)
+        layout_radio = QVBoxLayout(radio_container)
 
-        layout_radio = QVBoxLayout()
+        self.label = QLabel('Choose the kind of problem', radio_container)
+        self.label.setObjectName('problem_label')
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout_radio.addWidget(self.label)
 
         self.radio_uncertainty = QRadioButton('Decision making under uncertainty', self.central_widget)
         layout_radio.addWidget(self.radio_uncertainty)
@@ -56,7 +57,8 @@ class MainWindow(QMainWindow):
         
         layout_radio.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
-        main_layout.addLayout(layout_radio)
+        main_layout.addWidget(radio_container, alignment=Qt.AlignmentFlag.AlignCenter)
+        main_layout.addStretch()
 
         self.button_next = QPushButton('Next', self.central_widget)
         self.button_next.clicked.connect(self.on_button_click)
@@ -80,7 +82,18 @@ class MainWindow(QMainWindow):
         self.new_window.show()
         self.close()
 
+def load_stylesheet(app, qss_path):
+    qss_file = Path(qss_path)
+    if qss_file.exists():
+        with open(qss_file, "r", encoding="utf-8") as file:
+            app.setStyleSheet(file.read())
+
+
 app = QApplication(sys.argv)
+
+qss_path = os.path.join(os.path.dirname(__file__), 'styles', 'light.qss')
+
+load_stylesheet(app, qss_path)
 
 window = MainWindow()
 window.show()
