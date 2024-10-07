@@ -1,11 +1,6 @@
-import sys
-import numpy as np
 from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QLabel, QRadioButton,
-    QPushButton, QWidget, QMessageBox, QVBoxLayout, QHBoxLayout,
-    QSpinBox, QTableWidget,
+    QLabel, QPushButton, QWidget, QVBoxLayout, QHBoxLayout
 )
-from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
 from decision_making_under_risk import DecisionMakingUnderRisk
 from decision_making_under_uncertainty import DecisionMakingUnderUncertainty
@@ -21,10 +16,16 @@ class SolutionWindow(QWidget):
 
         self.setWindowTitle('Solution')
 
+        self.setMinimumSize(640,480)
+
         main_layout =  QVBoxLayout(self)
 
         task_label  = QLabel(f"Task: {self.task}",self)
+        task_label.setObjectName("task_label")
+        task_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addWidget(task_label)
+
+        main_layout.addStretch()
 
         if task == "Decision making under risk":
             methods = {
@@ -38,29 +39,41 @@ class SolutionWindow(QWidget):
                 "Laplace Criterion": DecisionMakingUnderUncertainty.laplace_criterion,
                 "Maximax Criterion": DecisionMakingUnderUncertainty.maximax_criterion,
                 "Hurwitz Criterion": lambda pm: DecisionMakingUnderUncertainty.hurwitz_criterion(pm,alpha=self.alpha_value)
-            }
+            }   
         
         for method_name, method in methods.items():
             result = method(self.num_array)
             dynamic_layout = QHBoxLayout()  
             
             method_label = QLabel(f"Method: {method_name}", self)
+            method_label.setObjectName("method_label")
             result_label = QLabel(f"Result: {result}", self)
+            result_label.setObjectName("result_label")
+
+            method_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+            result_label.setAlignment(Qt.AlignmentFlag.AlignRight)
             
             dynamic_layout.addWidget(method_label)
             dynamic_layout.addWidget(result_label)
             
-            main_layout.addLayout(dynamic_layout) 
-        
+            main_layout.addLayout(dynamic_layout)
+
+            divider = QLabel(self)
+            divider.setObjectName("divider")
+            main_layout.addWidget(divider)
+
+        main_layout.addStretch()
 
         buttom_layout = QHBoxLayout()
 
         self.button_previous = QPushButton("Previous", self)
         self.button_previous.clicked.connect(self.on_button_click_previous)
+        self.button_previous.setObjectName("button_previous")   
         buttom_layout.addWidget(self.button_previous)
 
         self.button_close = QPushButton("Close", self)
         self.button_close.clicked.connect(self.close)
+        self.button_close.setObjectName("button_close")
         buttom_layout.addWidget(self.button_close)
 
         main_layout.addLayout(buttom_layout)
