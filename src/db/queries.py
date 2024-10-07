@@ -15,3 +15,15 @@ def get_all_activities():
         cur = con.cursor()
         cur.execute('SELECT * FROM user_history')
         return cur.fetchall()
+
+def delete_activity(activity_id: int):
+    with get_database_connection() as con:
+        cur = con.cursor()
+        cur.execute('DELETE FROM user_history WHERE id = ?', (activity_id,))
+        con.commit()
+
+def add_activity_description(activity_description: str, activity_id: int):
+    with get_database_connection() as con:
+        cur = con.cursor()
+        cur.execute('UPDATE user_history SET description=? WHERE id=?',(activity_description,activity_id))
+        con.commit()
