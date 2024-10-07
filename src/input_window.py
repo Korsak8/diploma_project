@@ -19,6 +19,8 @@ class InputWindow(QWidget):
 
         self.setWindowTitle('Input')
 
+        self.setMinimumSize(640,480)
+
         main_layout = QVBoxLayout(self)
 
         header_layout = QHBoxLayout()
@@ -45,6 +47,7 @@ class InputWindow(QWidget):
 
         self.upload_button = QPushButton('Upload file', self)
         self.upload_button.clicked.connect(self.load_file)
+        self.upload_button.setObjectName("upload_button")
         header_layout.addWidget(self.upload_button) 
         
         main_layout.addLayout(header_layout)
@@ -101,6 +104,13 @@ class InputWindow(QWidget):
             self.table_payoff_matrix.setRowCount(rows)
             self.table_payoff_matrix.setVerticalHeaderLabels([f'Row {i+1}' for i in range(rows)])
         
+        # adjusting cell size 
+        for row in range(self.table_payoff_matrix.rowCount()):
+            self.table_payoff_matrix.setRowHeight(row, 40)
+
+        for col in range(cols):
+            self.table_payoff_matrix.setColumnWidth(col, 100)
+        
         self.table_payoff_matrix.setColumnCount(cols)
         self.table_payoff_matrix.setHorizontalHeaderLabels([f'Column {i+1}' for i in range(cols)])
 
@@ -140,6 +150,7 @@ class InputWindow(QWidget):
         from main_window import MainWindow
         self.previous_window = MainWindow()
         self.previous_window.show()
+        self.close()
 
     def on_button_click_next(self):
         data = []
