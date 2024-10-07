@@ -1,8 +1,12 @@
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QScrollArea, QTableWidget, QTableWidgetItem
+    QWidget, QVBoxLayout, QScrollArea, QTableWidget, QTableWidgetItem,QPushButton
 )
 from db.database import get_database_connection
 from db.models import UserHistory
+from db.queries import delete_activity, add_activity_description
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon
+import os
 
 class HistoryWindow(QWidget):
     def __init__(self):
@@ -10,15 +14,17 @@ class HistoryWindow(QWidget):
 
         self.setWindowTitle('Solution History')
 
+        self.setMinimumSize(640,480)
+
         main_layout = QVBoxLayout(self)
 
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
 
         self.table_widget = QTableWidget()
-        self.table_widget.setColumnCount(7)
+        self.table_widget.setColumnCount(8)
         self.table_widget.setHorizontalHeaderLabels([
-            "№",  "Description", "Task Type", "Matrix", "Alpha Value", "C Value", "Timestamp"
+            "#",  "Description", "Task Type", "Matrix", "Alpha Value", "C Value", "Timestamp", ""
         ])
 
         self.table_widget.verticalHeader().setVisible(False)
@@ -30,7 +36,7 @@ class HistoryWindow(QWidget):
         for row_index, activity_data in enumerate(activities):
             activity = activity_data['user_history']
 
-            self.table_widget.setItem(row_index, 0, QTableWidgetItem(str(activity_data['id'])))
+            self.table_widget.setItem(row_index, 0, QTableWidgetItem(str(row_index+1)))
             self.table_widget.setItem(row_index, 1, QTableWidgetItem(activity.description))
             self.table_widget.setItem(row_index, 2, QTableWidgetItem(activity.task_type))
             self.table_widget.setItem(row_index, 3, QTableWidgetItem(activity.matrix))
@@ -38,10 +44,21 @@ class HistoryWindow(QWidget):
             self.table_widget.setItem(row_index, 5, QTableWidgetItem(str(activity.c_value)))
             self.table_widget.setItem(row_index, 6, QTableWidgetItem(activity_data['timestamp']))
 
+            self.table_widget.setRowHeight(row_index, 40)
+
+            self.table_widget.item(row_index, 1).setFlags(Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled)
+
+            delete_button = QPushButton()
+            delete_icon_path = os.path.join(os.getcwd(), "src", "icons", "delete_icon.svg")
+            delete_button.setIcon(QIcon(delete_icon_path))
+            delete_button.setObjectName('delete_button')
+            delete_button.clicked.connect(lambda _, row=row_index, id=activity_data['id']: self.delete_activity_and_row(row,id))
+            self.table_widget.setCellWidget(row_index,7,delete_button)
+
         scroll_area.setWidget(self.table_widget)
         main_layout.addWidget(scroll_area)
 
-
+        self.table_widget.cellChanged.connect(lambda row, _: self.handle_description_changed(row,1))
 
     def fetch_user_activities(self):
         with get_database_connection() as con:
@@ -63,3 +80,14 @@ class HistoryWindow(QWidget):
             } for row in rows
             ]
             return activities
+        
+    def delete_activity_and_row(self, row: int, activity_id: int):
+        if delete_activity(activity_id):
+            self.table_widget.removeRow(row)
+        else:
+            print(f"Failed to delete the record with id: {activity_id}")
+
+    def handle_description_changed(self, row, column):
+        activity_id = self.fetch_user_activities()[row]['id']
+        new_description = self.table_widget.item(row,column).text()
+        add_activity_description(new_description, activity_id)
