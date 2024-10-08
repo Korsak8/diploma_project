@@ -21,6 +21,7 @@ def delete_activity(activity_id: int):
         cur = con.cursor()
         cur.execute('DELETE FROM user_history WHERE id = ?', (activity_id,))
         con.commit()
+        return cur.rowcount
 
 def add_activity_description(activity_description: str, activity_id: int):
     with get_database_connection() as con:
