@@ -1,13 +1,15 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QScrollArea, QTableWidget, QTableWidgetItem,QPushButton,
-    QMessageBox
 )
 from db.database import get_database_connection
 from db.models import UserHistory
 from db.queries import delete_activity, add_activity_description
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
+from solution_window import SolutionWindow
+import numpy as np
 import os
+import json
 
 class HistoryWindow(QWidget):
     def __init__(self):
@@ -23,9 +25,9 @@ class HistoryWindow(QWidget):
         scroll_area.setWidgetResizable(True)
 
         self.table_widget = QTableWidget()
-        self.table_widget.setColumnCount(8)
+        self.table_widget.setColumnCount(9)
         self.table_widget.setHorizontalHeaderLabels([
-            "#",  "Description", "Task Type", "Matrix", "Alpha Value", "C Value", "Timestamp", ""
+            "#",  "Description", "Task Type", "Matrix", "Alpha Value", "C Value", "Timestamp", "", ""
         ])
 
         self.table_widget.verticalHeader().setVisible(False)
@@ -55,6 +57,13 @@ class HistoryWindow(QWidget):
             delete_button.setObjectName('delete_button')
             delete_button.clicked.connect(self.delete_activity_and_row)
             self.table_widget.setCellWidget(row_index,7,delete_button)
+
+            next_solution_button = QPushButton()
+            next_solution_button_path = os.path.join(os.getcwd(),"src", "icons", "right_arrow.svg")
+            next_solution_button.setIcon(QIcon(next_solution_button_path))
+            next_solution_button.setObjectName('next_solution')
+            next_solution_button.clicked.connect(self.show_solution)
+            self.table_widget.setCellWidget(row_index,8,next_solution_button)
 
         scroll_area.setWidget(self.table_widget)
         main_layout.addWidget(scroll_area)
@@ -99,3 +108,18 @@ class HistoryWindow(QWidget):
         activity_id = self.fetch_user_activities()[row]['id']
         new_description = self.table_widget.item(row,column).text()
         add_activity_description(new_description, activity_id)
+
+    def show_solution(self):
+        currentRow = self.table_widget.currentRow()
+        activity_data = self.fetch_user_activities()[currentRow]
+
+        matrix_str = activity_data['user_history'].matrix
+        matrix = np.array(json.loads(matrix_str))
+        alpha_value = activity_data['user_history'].alpha_value
+        task = activity_data['user_history'].task_type
+        c_value = activity_data['user_history'].c_value
+        
+        self.solution_window = SolutionWindow(matrix,alpha_value,task,c_value)
+        self.solution_window.show()
+
+        self.close()
