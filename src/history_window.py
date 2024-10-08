@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QScrollArea, QTableWidget, QTableWidgetItem,QPushButton
+    QWidget, QVBoxLayout, QScrollArea, QTableWidget, QTableWidgetItem,QPushButton,
+    QMessageBox
 )
 from db.database import get_database_connection
 from db.models import UserHistory
@@ -52,7 +53,7 @@ class HistoryWindow(QWidget):
             delete_icon_path = os.path.join(os.getcwd(), "src", "icons", "delete_icon.svg")
             delete_button.setIcon(QIcon(delete_icon_path))
             delete_button.setObjectName('delete_button')
-            delete_button.clicked.connect(lambda _, row=row_index, id=activity_data['id']: self.delete_activity_and_row(row,id))
+            delete_button.clicked.connect(self.delete_activity_and_row)
             self.table_widget.setCellWidget(row_index,7,delete_button)
 
         scroll_area.setWidget(self.table_widget)
@@ -81,11 +82,18 @@ class HistoryWindow(QWidget):
             ]
             return activities
         
-    def delete_activity_and_row(self, row: int, activity_id: int):
-        if delete_activity(activity_id):
-            self.table_widget.removeRow(row)
+    def delete_activity_and_row(self):
+        currentRow = self.table_widget.currentRow()
+        activity_id = self.fetch_user_activities()[currentRow]['id']
+        if delete_activity(activity_id) > 0:
+            self.table_widget.removeRow(currentRow)
+            self.update_row_numbers()
         else:
-            print(f"Failed to delete the record with id: {activity_id}")
+            print(f'Failed to delete the record with id: {activity_id}')
+
+    def update_row_numbers(self):
+        for row in range(self.table_widget.rowCount()):
+            self.table_widget.item(row, 0).setText(str(row + 1))
 
     def handle_description_changed(self, row, column):
         activity_id = self.fetch_user_activities()[row]['id']
