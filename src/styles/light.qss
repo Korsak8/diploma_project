@@ -182,15 +182,15 @@ QLabel#divider{
 /* ===================== */
 
 /*delete icon style*/
-QPushButton#delete_button {
+QPushButton#delete_button, QPushButton#next_solution {
     background-color: transparent;
     border: none;
 }
 
-QPushButton:hover#delete_button {
+QPushButton:hover#delete_button, QPushButton:hover#next_solution {
     background-color: #f5f5f5;
 }
 
-QPushButton:pressed#delete_button {
+QPushButton:pressed#delete_button, QPushButton:pressed#next_solution {
     background-color: #e0e0e0;
 }
