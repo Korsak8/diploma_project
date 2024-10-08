@@ -1,6 +1,6 @@
-import sys
 import numpy as np
 import pandas as pd
+import json
 from PyQt6.QtWidgets import (
     QLabel, QPushButton, QWidget, QMessageBox, QVBoxLayout, QHBoxLayout,
     QSpinBox, QTableWidget, QDoubleSpinBox, QFileDialog, QTableWidgetItem
@@ -168,7 +168,7 @@ class InputWindow(QWidget):
             QMessageBox.warning(self, "Error", "The matrix is empty or contains invalid entries.")
             return
         
-        matrix_str = '\n'.join([','.join(map(str, row)) for row in num_array])
+        matrix_str = json.dumps(num_array.tolist())
     
         activity = UserHistory(
             description='',
